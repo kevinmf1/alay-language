@@ -1,10 +1,13 @@
 /**
- * Converter Bahasa Normal ke Bahasa Alay
- * Pendekatan: mapping karakter per karakter dengan variasi acak
- * Referensi gaya alay: forum Kaskus, Facebook era 2009-2012, SMS alay
+ * Converter Bahasa Alay (Bidirectional)
+ * Normal → Alay dan Alay → Normal
+ * Pendekatan: mapping karakter per karakter
  */
 
-// Mapping huruf ke variasi alay (lebih dari 1 pilihan per huruf agar hasil bervariasi)
+// Mode saat ini: 'toAlay' atau 'toNormal'
+let currentMode = 'toAlay';
+
+// Mapping huruf ke variasi alay
 const alayCharMap = {
     // Vokal
     'a': ['4'],
@@ -19,15 +22,15 @@ const alayCharMap = {
     'd': ['d', 'D'],
     'f': ['f', 'F'],
     'g': ['9', '6'],
-    'h': ['h', 'H',], // |-|
+    'h': ['h', 'H'],
     'j': ['j', 'J'],
-    'k': ['k', 'K'], // |< 
+    'k': ['k', 'K'],
     'l': ['l', 'L'],
     'm': ['m', 'M'],
     'n': ['n', 'N'],
     'p': ['p', 'P'],
     'q': ['q', 'Q'],
-    'r': ['r', 'R'], // 12 untuk 'r' karena bentuknya mirip
+    'r': ['r', 'R'],
     's': ['5'],
     't': ['t', 'T'],
     'v': ['v', 'V'],
@@ -37,21 +40,39 @@ const alayCharMap = {
     'z': ['z', 'Z'],
 };
 
+// Buat reverse map: alay char/string → huruf normal
+// Multi-char mappings (seperti 'VV' → 'w') diproses terlebih dahulu
+const reverseMap = {};
+const reverseMultiChar = []; // untuk mapping lebih dari 1 karakter
+
+for (const [normal, alayVariants] of Object.entries(alayCharMap)) {
+    for (const alay of alayVariants) {
+        const alayLower = alay.toLowerCase();
+        // Jangan map jika alay sama dengan huruf aslinya (tidak perlu di-reverse)
+        if (alayLower === normal) continue;
+        if (alay.length > 1) {
+            reverseMultiChar.push({ from: alayLower, to: normal });
+        } else {
+            reverseMap[alayLower] = normal;
+        }
+    }
+}
+// Urutkan multi-char dari yang terpanjang agar greedy match
+reverseMultiChar.sort((a, b) => b.from.length - a.from.length);
+
 function pickRandom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
 
+// Normal → Alay
 function toAlay(text) {
     let result = '';
-
     for (let i = 0; i < text.length; i++) {
         const ch = text[i];
         const lower = ch.toLowerCase();
-
         if (alayCharMap[lower]) {
             result += pickRandom(alayCharMap[lower]);
         } else {
-            // Spasi, tanda baca, angka, dsb. — beri efek random besar-kecil
             if (Math.random() > 0.65) {
                 result += ch.toUpperCase();
             } else {
@@ -59,13 +80,65 @@ function toAlay(text) {
             }
         }
     }
-
     return result;
 }
 
-document.getElementById('convertBtn').addEventListener('click', function () {
-    const input = document.getElementById('inputText').value;
-    const output = toAlay(input);
+// Alay → Normal
+function toNormal(text) {
+    let result = '';
+    let i = 0;
+    while (i < text.length) {
+        let matched = false;
+        // Cek multi-char mappings terlebih dahulu (greedy)
+        for (const { from, to } of reverseMultiChar) {
+            const slice = text.substring(i, i + from.length).toLowerCase();
+            if (slice === from) {
+                result += to;
+                i += from.length;
+                matched = true;
+                break;
+            }
+        }
+        if (!matched) {
+            const ch = text[i];
+            const lower = ch.toLowerCase();
+            if (reverseMap[lower]) {
+                result += reverseMap[lower];
+            } else {
+                result += lower;
+            }
+            i++;
+        }
+    }
+    return result;
+}
+
+// Toggle mode
+const btnToAlay = document.getElementById('modeNormalToAlay');
+const btnToNormal = document.getElementById('modeAlayToNormal');
+const convertBtn = document.getElementById('convertBtn');
+const inputText = document.getElementById('inputText');
+
+btnToAlay.addEventListener('click', function () {
+    currentMode = 'toAlay';
+    btnToAlay.classList.add('active');
+    btnToNormal.classList.remove('active');
+    convertBtn.textContent = 'Convert ke Alay';
+    inputText.placeholder = 'Tulis kalimat normal di sini...';
+});
+
+btnToNormal.addEventListener('click', function () {
+    currentMode = 'toNormal';
+    btnToNormal.classList.add('active');
+    btnToAlay.classList.remove('active');
+    convertBtn.textContent = 'Convert ke Normal';
+    inputText.placeholder = 'Tulis kalimat alay di sini...';
+});
+
+// Tombol convert
+convertBtn.addEventListener('click', function () {
+    const input = inputText.value;
+    const output = currentMode === 'toAlay' ? toAlay(input) : toNormal(input);
     document.getElementById('outputText').value = output;
 });
 

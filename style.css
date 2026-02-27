@@ -24,6 +24,35 @@ h1 {
     color: #333;
 }
 
+.mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.mode-btn {
+    flex: 1;
+    padding: 10px;
+    background: #e5e7eb;
+    color: #555;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-bottom: 0;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.mode-btn:hover {
+    background: #d1d5db;
+}
+
+.mode-btn.active {
+    background: #4f8cff;
+    color: #fff;
+    border-color: #2563eb;
+}
+
 textarea {
     width: 100%;
     min-height: 80px;

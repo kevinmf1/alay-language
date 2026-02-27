@@ -1,0 +1,97 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+    padding: 0 16px;
+}
+
+.container {
+    max-width: 500px;
+    width: 100%;
+    margin: 40px auto;
+    background: #fff;
+    padding: 32px 24px;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+textarea {
+    width: 100%;
+    min-height: 80px;
+    margin: 12px 0;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+    resize: vertical;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4f8cff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background 0.2s;
+}
+
+button:hover {
+    background: #2563eb;
+}
+
+#copyBtn {
+    background: #22c55e;
+}
+
+#copyBtn:hover {
+    background: #16a34a;
+}
+
+footer {
+    text-align: center;
+    color: #888;
+    margin-top: 32px;
+    font-size: 0.95rem;
+}
+
+footer a {
+    color: #4f8cff;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 540px) {
+    .container {
+        margin: 20px auto;
+        padding: 20px 16px;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 10px;
+    }
+
+    textarea {
+        font-size: 0.95rem;
+    }
+}
